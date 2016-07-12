@@ -80,8 +80,8 @@ screen = blessed.screen({
 var lorem = require('fs').readFileSync(__dirname + '/git.diff', 'utf8');
 
 var cleanSides = screen.cleanSides;
-function expectClean(value) {
-  screen.cleanSides = function(el) {
+function expectClean(value: any) {
+  screen.cleanSides = function(el: blessed.widget.Element) {
     var ret = cleanSides.apply(this, arguments);
     if (ret !== value) {
       throw new Error('Failed. Expected '

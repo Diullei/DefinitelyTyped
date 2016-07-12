@@ -84,6 +84,51 @@ declare module "blessed" {
                 */
                 color: string;
             }
+
+            export type TAlign = "left" | "center" | "right"; 
+
+            export type ListbarCommand = { 
+                key: string; 
+                callback: () => void;
+            }; 
+
+            export type TImage = {
+                /**
+                 * Pixel width.
+                */
+                width: number; 
+                /**
+                 * Pixel height.
+                */
+                height: number;
+                /**
+                 * Image bitmap.
+                 * */ 
+                bmp: any; 
+                /**
+                 * Image cellmap (bitmap scaled down to cell size).
+                */
+                cellmap: any;
+            };
+
+            export type Cursor = {
+                /**
+                 * Have blessed draw a custom cursor and hide the terminal cursor (experimental).
+                */
+                artificial: boolean;
+                /**
+                 * Shape of the cursor. Can be: block, underline, or line.
+                */
+                shape: boolean;
+                /**
+                 * Whether the cursor blinks.
+                */
+                blink: boolean;
+                /**
+                 * Color of the color. Accepts any valid color value (null is default).
+                */
+                color: string;
+            }
         }
 
         export module Events {
@@ -104,6 +149,17 @@ declare module "blessed" {
             }
         }
         
+        export interface NodeChildProcessExecOptions {
+            cwd?: string;
+            stdio?: any;
+            customFds?: any;
+            env?: any;
+            encoding?: string;
+            timeout?: number;
+            maxBuffer?: number;
+            killSignal?: string;
+        }
+
         export interface IDestroyable {
             destroy(): void;
         }
@@ -115,30 +171,25 @@ declare module "blessed" {
             options: T;
         }
         
-        export interface IHasGenericMiscellanousUserData<TMiscellanousUserData> {
-            /**
-             * An object for any miscellanous user data.
-            */
-            data: TMiscellanousUserData;
-            /**
-             * An object for any miscellanous user data.
-            */
-            _: TMiscellanousUserData;
-            /**
-             * An object for any miscellanous user data.
-            */
-            $: TMiscellanousUserData;
+        export interface TputsOptions extends IOptions {
+            terminal?: string;
+            extended?: boolean;
+            debug?: boolean;
+            termcap?: string;
+            terminfoFile?: string;
+            terminfoPrefix?: string;
+            termcapFile?: string;
         }
-                
-        export class Tput implements IHasOptions<IScreenOptions> {
-            constructor(opts: IScreenOptions);
+
+        export class Tput implements IHasOptions<TputsOptions> {
+            constructor(opts: TputsOptions);
 
             // ** properties ** //
 
             /**
              * Original options object.
             */
-            options: IScreenOptions;
+            options: TputsOptions;
 
             debug: boolean;
             padding: boolean;
@@ -152,9 +203,9 @@ declare module "blessed" {
             terminal: string;
             
             setup(): void;
-            term(is): boolean;
-            readTerminfo(term): string;
-            parseTerminfo(data, file: string): {
+            term(is: any): boolean;
+            readTerminfo(term: string): string;
+            parseTerminfo(data: any, file: string): {
                 header: {
                     dataSize: number;
                     headerSize: number;
@@ -183,27 +234,6 @@ declare module "blessed" {
             };
         }
         
-        export type TTopLeft = string | number | "center";
-        export type TPosition = string | number;
-        export type TStyle = {
-            type?: string;
-            bg?: string;
-            fg?: string;
-            ch?: string;
-            bold?: boolean;
-            underline?: boolean;
-            blink?: boolean;
-            inverse?: boolean;
-            invisible?: boolean;
-            transparent?: boolean;
-            border?: "line" | "bg" | Border;
-            hover?: boolean;
-            focus?: boolean;
-            label?: string;
-            track?: {bg?: string; fg?: string;};
-            scrollbar?: {bg?: string; fg?: string;};
-        }
-        
         export interface IDestroyable {
             destroy(): void;
         }
@@ -215,26 +245,7 @@ declare module "blessed" {
             children?: Node[];
             focusable?: boolean;
         }
-        
-        export interface HasOptions<T extends INodeOptions> {
-            options: T;
-        }
                 
-        export abstract class GenericNode<TMiscellanousUserData> extends Node implements IHasGenericMiscellanousUserData<TMiscellanousUserData> {
-            /**
-             * An object for any miscellanous user data.
-            */
-            data: TMiscellanousUserData;
-            /**
-             * An object for any miscellanous user data.
-            */
-            _: TMiscellanousUserData;
-            /**
-             * An object for any miscellanous user data.
-            */
-            $: TMiscellanousUserData;
-        }
-        
         export abstract class Node extends EventEmitter implements IHasOptions<INodeOptions>, IDestroyable {
             constructor(options: INodeOptions);
 
@@ -317,19 +328,19 @@ declare module "blessed" {
             /**
              * Remove node from its parent.
             */
-            forDescendants(iter, s): void;
+            forDescendants(iter: Function, s: any): void;
             /**
              * Remove node from its parent.
             */
-            forAncestors(iter, s): void;
+            forAncestors(iter: Function, s: any): void;
             /**
              * Remove node from its parent.
             */
-            collectDescendants(s): void;
+            collectDescendants(s: any): void;
             /**
              * Remove node from its parent.
             */
-            collectAncestors(s): void;
+            collectAncestors(s: any): void;
             /**
              * Remove node from its parent.
             */
@@ -353,7 +364,7 @@ declare module "blessed" {
             /**
              * Emit event for element, and recursively emit same event for all descendants.
             */
-            emitDescendants(type: string, ...args: any[]);
+            emitDescendants(type: string, ...args: any[]): void;
             /**
              * Get user property with a potential default value.
             */
@@ -386,25 +397,6 @@ declare module "blessed" {
              * Received when node is detached from the screen directly or somewhere in its ancestry.
             */
             on(event: "detach", callback: (arg: Node) => void): this;
-        }
-        
-        export interface Cursor {
-            /**
-             * Have blessed draw a custom cursor and hide the terminal cursor (experimental).
-            */
-            artificial: boolean;
-            /**
-             * Shape of the cursor. Can be: block, underline, or line.
-            */
-            shape: boolean;
-            /**
-             * Whether the cursor blinks.
-            */
-            blink: boolean;
-            /**
-             * Color of the color. Accepts any valid color value (null is default).
-            */
-            color: string;
         }
         
         export class NodeWithEvents extends Node {
@@ -505,21 +497,6 @@ declare module "blessed" {
             on(event: "parsed content", callback: () => void): this;
         }
                 
-        export interface MouseEventArg {
-            x: number;
-            y: number;
-            action: "mousedown" | "mouseup" | "mousemove";
-        }
-        
-        export interface KeyEventArg {
-            full: string;
-            name: string;
-            shift: boolean;
-            ctrl: boolean;
-            meta: boolean;
-        }
-        
-        
         export interface IScreenOptions extends INodeOptions {
             /**
              * The blessed Program to be associated with. Will be automatically instantiated if none is provided.
@@ -695,32 +672,6 @@ declare module "blessed" {
              * Set or get window title.
             */
             title?: string;
-        }
- 
-        export class GenericScreen<TMiscellanousUserData> extends Screen implements IHasGenericMiscellanousUserData<TMiscellanousUserData> {
-            /**
-             * An object for any miscellanous user data.
-            */
-            data: TMiscellanousUserData;
-            /**
-             * An object for any miscellanous user data.
-            */
-            _: TMiscellanousUserData;
-            /**
-             * An object for any miscellanous user data.
-            */
-            $: TMiscellanousUserData;
-        }
-
-        export interface NodeChildProcessExecOptions {
-            cwd?: string;
-            stdio?: any;
-            customFds?: any;
-            env?: any;
-            encoding?: string;
-            timeout?: number;
-            maxBuffer?: number;
-            killSignal?: string;
         }
  
         export class Screen extends NodeWithEvents implements IHasOptions<IScreenOptions> {
@@ -982,7 +933,7 @@ declare module "blessed" {
             /**
              * Set effects based on two events and attributes.
             */
-            setEffects(el: BlessedElement, fel: BlessedElement, over, out, effects, temp): void;
+            setEffects(el: BlessedElement, fel: BlessedElement, over: any, out: any, effects: any, temp: any): void;
             /**
              * Insert a line into the screen (using csr: this bypasses the output buffer).
             */
@@ -1056,7 +1007,7 @@ declare module "blessed" {
             /**
              * Reset the terminal to term. Reloads terminfo.
             */
-            setTerminal(term): void;
+            setTerminal(term: string): void;
         }
 
         export interface Padding {
@@ -1113,7 +1064,7 @@ declare module "blessed" {
             /**
              * Border object, see below.
             */
-            border?: Border;
+            border?: Border | "line" | "bg";
             /**
              * Element's text content.
             */
@@ -1161,10 +1112,10 @@ declare module "blessed" {
             */
             padding?: number | Padding;
             
-            top?: TTopLeft;
-            left?: TTopLeft;
-            right?: TPosition;
-            bottom?: TPosition;
+            top?: Types.TTopLeft;
+            left?: Types.TTopLeft;
+            right?: Types.TPosition;
+            bottom?: Types.TPosition;
             
             /**
              * Width/height of the element, can be a number, percentage (0-100%), or keyword (half or shrink). 
@@ -1206,22 +1157,19 @@ declare module "blessed" {
             yi: number;
             base: number;
             _contentEnd: {x: number; y: number;};
-            notop: TTopLeft;
-            noleft: TTopLeft;
-            noright: TPosition;
-            nobot: TPosition;
+            notop: Types.TTopLeft;
+            noleft: Types.TTopLeft;
+            noright: Types.TPosition;
+            nobot: Types.TPosition;
         }
-
-        export type TAlign = "left" | "center" | "right"; 
 
         export interface LabelOptions {
             text: string;
-            side: TAlign;
+            side: Types.TAlign;
         }
 
         // TODO: scrollable - Note: If the scrollable option is enabled, Element inherits all methods from ScrollableBox.
-
-        export abstract class BlessedElement extends NodeWithEvents implements HasOptions<ElementOptions>, IDestroyable {
+        export abstract class BlessedElement extends NodeWithEvents implements IHasOptions<ElementOptions> {
             constructor(opts: ElementOptions);
             
             // ** properties ** //
@@ -1265,62 +1213,62 @@ declare module "blessed" {
             height: number | string;
             /**
              * Calculated relative top offset.*/ 
-            top: TTopLeft; 
+            top: Types.TTopLeft; 
             /**
              * Calculated relative left offset.
             */ 
-            left: TTopLeft; 
+            left: Types.TTopLeft; 
             /**
              * Calculated relative right offset.
             */
-            right: TPosition;
+            right: Types.TPosition;
             /**
              * Calculated relative bottom offset.
             */
-            bottom: TPosition;
+            bottom: Types.TPosition;
             /**
              * Calculated absolute top offset.
             */ 
-            atop: TTopLeft; 
+            atop: Types.TTopLeft; 
             /**
              * Calculated absolute left offset.
             */ 
-            aleft: TTopLeft; 
+            aleft: Types.TTopLeft; 
             /**
              * Calculated absolute right offset.
             */
-            aright: TPosition;
+            aright: Types.TPosition;
             /**
              * Calculated absolute bottom offset.
             */
-            abottom: TPosition; 
+            abottom: Types.TPosition; 
 
             /**
              * Whether the element is draggable. Set to true to allow dragging.
             */
             draggable: boolean; 
             
-            itop: TTopLeft;
-            ileft: TTopLeft;
-            iheight: TPosition;
-            iwidth: TPosition;
+            itop: Types.TTopLeft;
+            ileft: Types.TTopLeft;
+            iheight: Types.TPosition;
+            iwidth: Types.TPosition;
 
             /**
              * Calculated relative top offset.
             */ 
-            rtop: TTopLeft;
+            rtop: Types.TTopLeft;
             /**
              * Calculated relative left offset.
             */ 
-            rleft: TTopLeft;
+            rleft: Types.TTopLeft;
             /**
              * Calculated relative right offset.
             */ 
-            rright: TPosition;
+            rright: Types.TPosition;
             /**
              * Calculated relative bottom offset.
             */ 
-            rbottom: TPosition;
+            rbottom: Types.TPosition;
             
             lpos: PositionCoords;
             
@@ -1533,19 +1481,7 @@ declare module "blessed" {
 
             // ** events ** //
         }
-          
-        export interface TextOptions extends ElementOptions {
-            /**
-             * Fill the entire line with chosen bg until parent bg ends, even if there 
-             * is not enough text to fill the entire width.
-            */
-            fill?: boolean;
-            /**
-             * Text alignment: left, center, or right.
-            */
-            align?: TAlign;
-        }
-      
+              
         export interface ScrollableBoxOptions extends ElementOptions {
             /**
              * A limit to the childBase. Default is Infinity.
@@ -1586,7 +1522,7 @@ declare module "blessed" {
         /**
          * DEPRECATED - Use Box with the scrollable option instead. A box with scrollable content.
         */
-        export class ScrollableBoxExt extends BlessedElement {
+        export class ScrollableBoxElement extends BlessedElement {
             /**
              * The offset of the top of the scroll content.
             */
@@ -1641,13 +1577,13 @@ declare module "blessed" {
          * A scrollable text box which can display and scroll text, as well as handle 
          * pre-existing newlines and escape codes.
         */
-        export class ScrollableText extends ScrollableBoxExt {
+        export class ScrollableTextElement extends ScrollableBoxElement {
         }
         
         /**
          * A box element which draws a simple box containing content or other elements.
         */
-        export class BoxElement extends ScrollableText implements HasOptions<BoxOptions> {
+        export class BoxElement extends ScrollableTextElement implements IHasOptions<BoxOptions> {
             constructor(opts: BoxOptions);
 
             /**
@@ -1656,10 +1592,22 @@ declare module "blessed" {
             options: BoxOptions;
         }
 
+        export interface TextOptions extends ElementOptions {
+            /**
+             * Fill the entire line with chosen bg until parent bg ends, even if there 
+             * is not enough text to fill the entire width.
+            */
+            fill?: boolean;
+            /**
+             * Text alignment: left, center, or right.
+            */
+            align?: Types.TAlign;
+        }
+
         /**
          * An element similar to Box, but geared towards rendering simple text elements.
         */
-        export class TextElement extends BlessedElement implements HasOptions<TextOptions> {
+        export class TextElement extends BlessedElement implements IHasOptions<TextOptions> {
             constructor(opts: TextOptions);
             
             /**
@@ -1688,7 +1636,7 @@ declare module "blessed" {
         /**
          * A simple line which can be line or bg styled.
         */
-        export class LineElement extends BoxElement implements HasOptions<LineOptions> {
+        export class LineElement extends BoxElement implements IHasOptions<LineOptions> {
             constructor(opts: LineOptions);
             
             /**
@@ -1715,7 +1663,7 @@ declare module "blessed" {
         /**
          * A box which can render content drawn as 8x14 cell characters using the terminus font.
         */
-        export class BigTextElement extends BoxElement implements HasOptions<BigTextOptions> {
+        export class BigTextElement extends BoxElement implements IHasOptions<BigTextOptions> {
             constructor(opts: BigTextOptions);
             
             /**
@@ -1754,7 +1702,7 @@ declare module "blessed" {
             invertSelected?: boolean;
         }
         
-        export class ListElement extends BoxElement implements HasOptions<ListOptions<ListElementStyle>> {
+        export class ListElement extends BoxElement implements IHasOptions<ListOptions<ListElementStyle>> {
             constructor(opts: ListOptions<ListElementStyle>);
             
             /**
@@ -1765,7 +1713,7 @@ declare module "blessed" {
             /**
              * Add an item based on a string.
             */            
-            add(text: string);
+            add(text: string): void;
             /**
              * Add an item based on a string.
             */            
@@ -1793,7 +1741,7 @@ declare module "blessed" {
             /**
              * Inserts an item to the list. Child can be an element, index, or string.
             */
-            insertItem(i: number, child: BlessedElement); 
+            insertItem(i: number, child: BlessedElement): void; 
             /**
              * Returns the item element. Child can be an element, index, or string.
             */
@@ -1805,7 +1753,7 @@ declare module "blessed" {
             /**
              * Remove and insert items to the list.
              * */ 
-            spliceItem(i: number, n: number, ...items: BlessedElement[]);
+            spliceItem(i: number, n: number, ...items: BlessedElement[]): void;
             /**
              * Clears all items from the list.
              * */ 
@@ -1841,7 +1789,7 @@ declare module "blessed" {
             /**
              * Find an item based on its text content.
             */
-            fuzzyFind(arg: string | RegExp | (() => void)); 
+            fuzzyFind(arg: string | RegExp | (() => void)): void; 
             
             // ** events ** //
             
@@ -1874,7 +1822,7 @@ declare module "blessed" {
             cwd?: string;
         }
         
-        export class FileManagerElement extends ListElement implements HasOptions<FileManagerOptions> {
+        export class FileManagerElement extends ListElement implements IHasOptions<FileManagerOptions> {
             constructor(opts: FileManagerOptions);
             
             /**
@@ -1950,7 +1898,7 @@ declare module "blessed" {
             style?: StyleListTable;
         }
         
-        export class ListTableElement extends ListElement implements HasOptions<ListTableOptions> {
+        export class ListTableElement extends ListElement implements IHasOptions<ListTableOptions> {
             constructor(opts: ListTableOptions);
             
             /**
@@ -1968,7 +1916,7 @@ declare module "blessed" {
                     [ 'Bird',     'Orange' ]
                 ]);
             */
-            setRows(rows: string[][]);
+            setRows(rows: string[][]): void;
             /**
              * Set rows in table. Array of arrays of strings.
              * @example:
@@ -1979,29 +1927,24 @@ declare module "blessed" {
                     [ 'Bird',     'Orange' ]
                 ]);
             */
-            setData(rows: string[][]);
+            setData(rows: string[][]): void;
         }
         
-        export type ListbarCommand = { 
-            key: string; 
-            callback: () => void;
-        }; 
-
         export interface ListbarOptions extends BoxOptions {
             style?: ListElementStyle;
             /**
              * Set buttons using an object with keys as titles of buttons, containing of objects 
              * containing keys of keys and callback.
             */
-            commands: ListbarCommand[];
-            items: ListbarCommand[];
+            commands: Types.ListbarCommand[];
+            items: Types.ListbarCommand[];
             /**
              * Automatically bind list buttons to keys 0-9.
             */
             autoCommandKeys: boolean;
         }
         
-        export class ListbarElement extends BoxElement implements HasOptions<ListbarOptions> {
+        export class ListbarElement extends BoxElement implements IHasOptions<ListbarOptions> {
             constructor(opts: ListbarOptions);
             
             /**
@@ -2012,19 +1955,19 @@ declare module "blessed" {
             /**
              * Set commands (see commands option above).
             */
-            setItems(commands: ListbarCommand[]): void;
+            setItems(commands: Types.ListbarCommand[]): void;
             /**
              * Append an item to the bar.
             */
-            add(item: ListbarCommand, callback: () => void): void;
+            add(item: Types.ListbarCommand, callback: () => void): void;
             /**
              * Append an item to the bar.
             */
-            addItem(item: ListbarCommand, callback: () => void): void;
+            addItem(item: Types.ListbarCommand, callback: () => void): void;
             /**
              * Append an item to the bar.
             */
-            appendItem(item: ListbarCommand, callback: () => void): void;
+            appendItem(item: Types.ListbarCommand, callback: () => void): void;
             /**
              * Select an item on the bar.
             */
@@ -2070,7 +2013,7 @@ declare module "blessed" {
             vi?: boolean;
         }
 
-        export class FormElement<TFormData> extends BoxElement implements HasOptions<FormOptions> {
+        export class FormElement<TFormData> extends BoxElement implements IHasOptions<FormOptions> {
             constructor(opts: FormOptions);
             
             /**
@@ -2120,21 +2063,23 @@ declare module "blessed" {
             on(event: "reset", callback: () => void): this;
         }
         
+        export interface InputOptions extends BoxOptions { }
+
         export abstract class InputElement extends BoxElement {
-            constructor(opts: BoxOptions);
+            constructor(opts: InputOptions);
         }
 
         /**
          * A box which allows multiline text input.
         */
-        export interface TextareaOptions extends BoxOptions {
+        export interface TextareaOptions extends InputOptions {
             /**
              * Call readInput() when the element is focused. Automatically unfocus.
             */
             inputOnFocus?: boolean;
         }
         
-        export class TextareaElement extends InputElement implements HasOptions<TextareaOptions> {
+        export class TextareaElement extends InputElement implements IHasOptions<TextareaOptions> {
             constructor(opts: TextareaOptions);
             
             /**
@@ -2229,7 +2174,14 @@ declare module "blessed" {
             censor?: boolean;
         }
         
-        export class TextboxElement extends TextareaElement {
+        export class TextboxElement extends TextareaElement implements IHasOptions<TextboxOptions> {
+            constructor(opts: TextboxOptions);
+            
+            /**
+             * Original options object.
+            */
+            options: TextboxOptions;
+
             /**
              * Completely hide text.
             */
@@ -2240,7 +2192,16 @@ declare module "blessed" {
             censor: boolean;            
         }
         
-        export class ButtonElement extends InputElement {
+        export interface ButtonOptions extends BoxOptions { }
+
+        export class ButtonElement extends InputElement implements IHasOptions<ButtonOptions> {
+            constructor(opts: ButtonOptions);
+            
+            /**
+             * Original options object.
+            */
+            options: ButtonOptions;
+
             /**
              * Press button. Emits press.
             */
@@ -2265,7 +2226,7 @@ declare module "blessed" {
         /** 
          * A checkbox which can be used in a form element. 
          * */
-        export class CheckboxElement extends InputElement implements HasOptions<CheckboxOptions> {
+        export class CheckboxElement extends InputElement implements IHasOptions<CheckboxOptions> {
             constructor(options?: CheckboxOptions);
 
             /**
@@ -2300,25 +2261,35 @@ declare module "blessed" {
             toggle(): void;
         }        
 
+        export interface RadioSetOptions extends BoxOptions { }
+
         /**
          * An element wrapping RadioButtons. RadioButtons within this element will be mutually exclusive 
          * with each other.
          * */        
         export abstract class RadioSetElement extends BoxElement {
-            constructor(opts: BoxOptions);
+            constructor(opts: RadioSetOptions);
         }
+
+        export interface RadioButtonOptions extends BoxOptions { }
 
         /**
          * A radio button which can be used in a form element.
         */
-        export abstract class RadioButton extends CheckboxElement {
-            constructor(opts: BoxOptions);
+        export abstract class RadioButtonElement extends CheckboxElement {
+            constructor(opts: RadioButtonOptions);
         }
         
+        export interface PromptOptions extends BoxOptions { }
+
         /**
          * A prompt box containing a text input, okay, and cancel buttons (automatically hidden).
         */
-        export class PromptElement extends BoxElement {
+        export class PromptElement extends BoxElement implements IHasOptions<PromptOptions> {
+            constructor(opts: PromptOptions);
+
+            options: PromptOptions;
+
             /**
              * Show the prompt and wait for the result of the textbox. Set text and initial value.
             */
@@ -2327,20 +2298,32 @@ declare module "blessed" {
             readInput(text: string, value: string, callback: (err: any, value: string) => void): void;
         }
         
+        export interface QuestionOptions extends BoxOptions { }
+
         /**
          * A question box containing okay and cancel buttons (automatically hidden).
         */
-        export class QuestionElement extends BoxElement {
+        export class QuestionElement extends BoxElement implements IHasOptions<QuestionOptions> {
+            constructor(opts: QuestionOptions);
+
+            options: QuestionOptions;
+            
             /**
              * Ask a question. callback will yield the result.
             */
             ask(question: string, callback: (err: any, value: string) => void): void;
         }
         
+        export interface MessageOptions extends BoxOptions { }
+
         /**
          * A box containing a message to be displayed (automatically hidden).
         */
-        export class MessageElement extends BoxElement {
+        export class MessageElement extends BoxElement implements IHasOptions<MessageOptions> {
+            constructor(opts: MessageOptions);
+
+            options: MessageOptions;
+
             /**
              * Display a message for a time (default is 3 seconds). Set time to 0 for a perpetual message that is dismissed on keypress.
             */
@@ -2356,10 +2339,16 @@ declare module "blessed" {
             error(text: string, callback: () => void): void;
         }
         
+        export interface LoadingOptions extends BoxOptions { }
+
         /**
          * A box with a spinning line to denote loading (automatically hidden).
         */
-        export class LoadingElement extends BoxElement {
+        export class LoadingElement extends BoxElement implements IHasOptions<LoadingOptions> {
+            constructor(opts: LoadingOptions);
+
+            options: LoadingOptions;
+
             /**
              * Display the loading box with a message. Will lock keys until stop is called.
             */
@@ -2400,8 +2389,10 @@ declare module "blessed" {
         /**
          * A progress bar allowing various styles. This can also be used as a form input.
         */
-        export class ProgressBarElement extends InputElement {
+        export class ProgressBarElement extends InputElement implements IHasOptions<ProgressBarOptions> {
             constructor(options?: ProgressBarOptions);
+
+            options: ProgressBarOptions;
 
             /** 
              * progress the bar by a fill amount. 
@@ -2441,8 +2432,10 @@ declare module "blessed" {
         /** 
          * A log permanently scrolled to the bottom. 
          * */
-        export class Log extends ScrollableText {
-            constructor(options?:LogOptions);
+        export class Log extends ScrollableTextElement implements IHasOptions<LogOptions> {
+            constructor(options?: LogOptions);
+
+            options: LogOptions;
 
             /** 
              * amount of scrollback allowed. default: Infinity. 
@@ -2489,8 +2482,11 @@ declare module "blessed" {
         /** 
          * A stylized table of text elements. 
          * */ 
-        export class TableElement extends BoxElement
-        {
+        export class TableElement extends BoxElement implements IHasOptions<TableOptions> {
+            constructor(opts: TableOptions);
+
+            options: TableOptions;
+
             /** 
              * set rows in table. array of arrays of strings. 
              * */
@@ -2527,7 +2523,11 @@ declare module "blessed" {
             env?: any;
         }
 
-        export class TerminalElement extends BoxElement {
+        export class TerminalElement extends BoxElement implements IHasOptions<TerminalOptions> {
+            constructor(opts: TerminalOptions);
+
+            options: TerminalOptions;
+
             /** 
              * reference to the headless term.js terminal.
              * */
@@ -2562,8 +2562,10 @@ declare module "blessed" {
         /** 
          * Display an image in the terminal (jpeg, png, gif) using w3mimgdisplay. Requires w3m to be installed. X11 required: works in xterm, urxvt, and possibly other terminals. 
          * */
-        export class ImageElement extends BoxElement {
+        export class ImageElement extends BoxElement implements IHasOptions<ImageOptions> {
             constructor(options?: ImageOptions);
+
+            options: ImageOptions;
         }
 
         export interface ANSIImageOptions extends BoxOptions {
@@ -2602,36 +2604,19 @@ declare module "blessed" {
             */
             optimization: "mem" | "cpu";
         }
-
-        export type TImage = {
-            /**
-             * Pixel width.
-            */
-            width: number; 
-            /**
-             * Pixel height.
-            */
-            height: number;
-            /**
-             * Image bitmap.
-             * */ 
-            bmp: any; 
-            /**
-             * Image cellmap (bitmap scaled down to cell size).
-            */
-            cellmap: any;
-        };
         
         /** 
          * Convert any .png file (or .gif, see below) to an ANSI image and display it as an element. 
          * */
-        export class ANSIImageElement extends BoxElement {
+        export class ANSIImageElement extends BoxElement implements IHasOptions<ANSIImageOptions> {
             constructor(options?:ANSIImageOptions);
+
+            options: ANSIImageOptions;
 
             /**
              * Image object from the png reader.
             */
-            img: TImage;
+            img: Types.TImage;
 
             /** 
              * set the image in the box to a new path. 
@@ -2677,9 +2662,11 @@ declare module "blessed" {
         /** 
          * Convert any .png file (or .gif, see below) to an ANSI image and display it as an element. 
          * */
-        export class OverlayImageElement extends BoxElement {
+        export class OverlayImageElement extends BoxElement implements IHasOptions<OverlayImageOptions> {
             constructor(options?: OverlayImageOptions);
             
+            options: OverlayImageOptions;
+
             /** 
              * set the image in the box to a new path. 
              * */
@@ -2713,8 +2700,10 @@ declare module "blessed" {
             start: number; 
         }
         
-        export class VideoElement extends BoxElement {
+        export class VideoElement extends BoxElement implements IHasOptions<VideoOptions> {
             constructor(options?: VideoOptions);
+
+            options: VideoOptions;
             
             /**
              * The terminal element running mplayer or mpv.
@@ -2722,6 +2711,48 @@ declare module "blessed" {
             tty: any;
         }
         
+        export interface LayoutOptions extends ElementOptions {
+            /**
+             * A callback which is called right before the children are iterated over to be rendered. Should return an 
+             * iterator callback which is called on each child element: iterator(el, i).
+            */
+            renderer?: () => void;
+
+            /**
+             * Using the default renderer, it provides two layouts: inline, and grid. inline is the default and will render 
+             * akin to inline-block. grid will create an automatic grid based on element dimensions. The grid cells' 
+             * width and height are always determined by the largest children in the layout.
+            */
+            layout: "inline" | "inline-block" | "grid";
+        }
+
+        export class LayoutElement extends Element implements IHasOptions<LayoutOptions> {
+            constructor(options?: LayoutOptions);
+
+            options: LayoutOptions;
+
+            /**
+             * A callback which is called right before the children are iterated over to be rendered. Should return an 
+             * iterator callback which is called on each child element: iterator(el, i).
+            */
+            renderer(coords: PositionCoords): void;
+            /**
+             * Check to see if a previous child element has been rendered and is visible on screen. This is only useful 
+             * for checking child elements that have already been attempted to be rendered! see the example below.
+            */
+            isRendered(el: Element): boolean;
+            /**
+             * Get the last rendered and visible child element based on an index. This is useful for basing the position 
+             * of the current child element on the position of the last child element.
+            */
+            getLast(i: number): Element;
+            /**
+             * Get the last rendered and visible child element coords based on an index. This is useful for basing the position 
+             * of the current child element on the position of the last child element. See the example below.
+            */
+            getLastCoords(i: number): PositionCoords; 
+        }
+
         export class Program {
             /**
                 Wrap the given text in terminal formatting codes corresponding to the given attribute
@@ -2732,13 +2763,39 @@ declare module "blessed" {
         }
     }
 
-    export class Node extends Widgets.Node { }
-    export class Screen extends Widgets.Screen { }
-    export class Element extends Widgets.BlessedElement { }
-    export class Box extends Widgets.BoxElement { }
-    export class Text extends Widgets.BoxElement { }
+    export module widget {
+        export class Element extends Widgets.BlessedElement { }
+        export class Node extends Widgets.Node { }
+        export class Screen extends Widgets.Screen { }
+
+        export class Box extends Widgets.BoxElement { }
+        export class ScrollableBox  extends Widgets.ScrollableBoxElement { }
+        export class ScrollableText  extends Widgets.ScrollableTextElement { }
+        export class Text extends Widgets.BoxElement { }
+        export class Line extends Widgets.LineElement { }
+        export class BigText extends Widgets.BigTextElement { }
+        export class List extends Widgets.ListElement { }
+        export class FileManager extends Widgets.FileManagerElement { }
+        export class ListTable extends Widgets.ListTableElement { }
+        export class ListBar extends Widgets.ListbarElement { }
+        export class Form<TFormData> extends Widgets.FormElement<TFormData> { }
+        export class Textarea extends Widgets.TextareaElement { }
+        export class Button extends Widgets.ButtonElement { }
+        export class Checkbox extends Widgets.CheckboxElement { }
+        export class RadioSet extends Widgets.RadioSetElement { }
+        export class RadioButton extends Widgets.RadioButtonElement { }
+
+        export class Prompt extends Widgets.PromptElement { }
+        export class question extends Widgets.QuestionElement { }
+        export class Message extends Widgets.MessageElement { }
+        export class Loading extends Widgets.LoadingElement { }
+
+        export class ProgressBar extends Widgets.ProgressBarElement { }
+        export class Terminal extends Widgets.TerminalElement { }
+    }
 
     export function screen(options?: Widgets.IScreenOptions): Widgets.Screen;
+
     export function box(options?: Widgets.BoxOptions): Widgets.BoxElement;
     export function text(options?: Widgets.TextOptions): Widgets.TextElement;
     export function line(options?: Widgets.LineOptions): Widgets.LineElement;
@@ -2750,20 +2807,20 @@ declare module "blessed" {
     export function listtable(options?: Widgets.ListTableOptions): Widgets.ListTableElement;
     export function listbar(options?: Widgets.ListbarOptions): Widgets.ListbarElement;
     export function form<TFormData>(options?: Widgets.FormOptions): Widgets.FormElement<TFormData>;
-    export function input(options?: Widgets.BoxOptions): Widgets.InputElement;
+    export function input(options?: Widgets.InputOptions): Widgets.InputElement;
     export function textarea(options?: Widgets.TextareaOptions): Widgets.TextareaElement;
     export function textbox(options?: Widgets.TextboxOptions): Widgets.TextboxElement;
-    export function button(options?: Widgets.BoxOptions): Widgets.ButtonElement;
-    export function checkbo(options?: Widgets.BoxOptions): Widgets.CheckboxElement;
-    export function radioset(options?: Widgets.BoxOptions): Widgets.RadioSetElement;
-    export function radiobutton(options?: Widgets.BoxOptions): Widgets.RadioButton;
+    export function button(options?: Widgets.ButtonOptions): Widgets.ButtonElement;
+    export function checkbo(options?: Widgets.CheckboxOptions): Widgets.CheckboxElement;
+    export function radioset(options?: Widgets.RadioSetOptions): Widgets.RadioSetElement;
+    export function radiobutton(options?: Widgets.RadioButtonOptions): Widgets.RadioButtonElement;
     
-    export function prompt(options?: Widgets.TextboxOptions): Widgets.PromptElement;
-    export function question(options?: Widgets.TextboxOptions): Widgets.QuestionElement;
-    export function message(options?: Widgets.TextboxOptions): Widgets.MessageElement;
-    export function loading(options?: Widgets.TextboxOptions): Widgets.LoadingElement;
+    export function prompt(options?: Widgets.PromptOptions): Widgets.PromptElement;
+    export function question(options?: Widgets.QuestionOptions): Widgets.QuestionElement;
+    export function message(options?: Widgets.MessageOptions): Widgets.MessageElement;
+    export function loading(options?: Widgets.LoadingOptions): Widgets.LoadingElement;
     
-    export function progressbar(options?: Widgets.BoxOptions): Widgets.ProgressBarElement;
+    export function progressbar(options?: Widgets.ProgressBarOptions): Widgets.ProgressBarElement;
     export function terminal(options?: Widgets.TerminalOptions): Widgets.TerminalElement;
     
     export function escape(item: any): any;
