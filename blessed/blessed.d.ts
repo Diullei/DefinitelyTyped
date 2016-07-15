@@ -2726,7 +2726,7 @@ declare module "blessed" {
             layout: "inline" | "inline-block" | "grid";
         }
 
-        export class LayoutElement extends Element implements IHasOptions<LayoutOptions> {
+        export class LayoutElement extends BlessedElement implements IHasOptions<LayoutOptions> {
             constructor(options?: LayoutOptions);
 
             options: LayoutOptions;
@@ -2740,7 +2740,7 @@ declare module "blessed" {
              * Check to see if a previous child element has been rendered and is visible on screen. This is only useful 
              * for checking child elements that have already been attempted to be rendered! see the example below.
             */
-            isRendered(el: Element): boolean;
+            isRendered(el: BlessedElement): boolean;
             /**
              * Get the last rendered and visible child element based on an index. This is useful for basing the position 
              * of the current child element on the position of the last child element.
@@ -2822,6 +2822,8 @@ declare module "blessed" {
     
     export function progressbar(options?: Widgets.ProgressBarOptions): Widgets.ProgressBarElement;
     export function terminal(options?: Widgets.TerminalOptions): Widgets.TerminalElement;
+
+    export function layout(options?: Widgets.LayoutOptions): Widgets.LayoutElement;
     
     export function escape(item: any): any;
     export const colors: {
