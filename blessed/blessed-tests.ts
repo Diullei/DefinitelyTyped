@@ -446,3 +446,328 @@ screen.key('q', function() {
 });
 
 screen.render();
+
+// https://github.com/chjj/blessed/blob/master/test/widget-form.js
+
+screen = blessed.screen({
+  dump: __dirname + '/logs/form.log',
+  warnings: true
+});
+
+type FormData = {
+    radio1: boolean;
+    radio2: boolean;
+    text: string;
+    check: boolean;
+};
+
+var form2 = blessed.form<FormData>({
+  parent: screen,
+  mouse: true,
+  keys: true,
+  vi: true,
+  left: 0,
+  top: 0,
+  width: '100%',
+  //height: 12,
+  style: {
+    bg: 'green',
+    border: {
+       inverse: true
+    },
+    scrollbar: {
+      inverse: true
+    }
+  },
+  content: 'foobar',
+  scrollable: true,
+  scrollbar: {
+    ch: ' '
+  }
+  //alwaysScroll: true
+});
+
+form2.on('submit', (data) => {
+  output.setContent(JSON.stringify(data, null, 2));
+  screen.render();
+});
+
+form2.key('d', function() {
+  form2.scroll(1, true);
+  screen.render();
+});
+
+form2.key('u', function() {
+  form2.scroll(-1, true);
+  screen.render();
+});
+
+var set = blessed.radioset({
+  parent: form2,
+  left: 1,
+  top: 1,
+  shrink: true,
+  //padding: 1,
+  //content: 'f',
+  style: {
+    bg: 'magenta'
+  }
+});
+
+var radio1 = blessed.radiobutton({
+  parent: set,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  style: {
+    bg: 'magenta'
+  },
+  height: 1,
+  left: 0,
+  top: 0,
+  name: 'radio1',
+  content: 'radio1'
+});
+
+var radio2 = blessed.radiobutton({
+  parent: set,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  style: {
+    bg: 'magenta'
+  },
+  height: 1,
+  left: 15,
+  top: 0,
+  name: 'radio2',
+  content: 'radio2'
+});
+
+var text2 = blessed.textbox({
+  parent: form2,
+  mouse: true,
+  keys: true,
+  style: {
+    bg: 'blue'
+  },
+  height: 1,
+  width: 20,
+  left: 1,
+  top: 3,
+  name: 'text'
+});
+
+text2.on('focus', function() {
+  text2.readInput();
+});
+
+var check = blessed.checkbox({
+  parent: form2,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  style: {
+    bg: 'magenta'
+  },
+  height: 1,
+  left: 28,
+  top: 1,
+  name: 'check',
+  content: 'check'
+});
+
+var check2 = blessed.checkbox({
+  parent: form2,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  style: {
+    bg: 'magenta'
+  },
+  height: 1,
+  left: 28,
+  top: 14,
+  name: 'foooooooo2',
+  content: 'foooooooo2'
+});
+
+var submit = blessed.button({
+  parent: form2,
+  mouse: true,
+  keys: true,
+  shrink: true,
+  padding: {
+    left: 1,
+    right: 1
+  },
+  left: 29,
+  top: 3,
+  name: 'submit',
+  content: 'submit',
+  style: {
+    bg: 'blue',
+    focus: {
+      bg: 'red'
+    }
+  }
+});
+
+submit.on('press', function() {
+  form2.submit();
+});
+
+var box1 = blessed.box({
+  parent: form2,
+  left: 1,
+  top: 10,
+  height: 10,
+  width: 10,
+  content: 'one',
+  style: {
+    bg: 'cyan'
+  }
+});
+
+var box2 = blessed.box({
+  parent: box1,
+  left: 1,
+  top: 2,
+  height: 8,
+  width: 9,
+  content: 'two',
+  style: {
+    bg: 'magenta'
+  }
+});
+
+var box3 = blessed.box({
+  parent: box2,
+  left: 1,
+  top: 2,
+  height: 6,
+  width: 8,
+  content: 'three',
+  style: {
+    bg: 'yellow'
+  }
+});
+
+var box4 = blessed.box({
+  parent: box3,
+  left: 1,
+  top: 2,
+  height: 4,
+  width: 7,
+  content: 'four',
+  style: {
+    bg: 'blue'
+  }
+});
+
+var output = blessed.scrollabletext({
+  parent: form2,
+  mouse: true,
+  keys: true,
+  left: 0,
+  top: 20,
+  height: 5,
+  right: 0,
+  style: {
+    bg: 'red'
+  },
+  content: 'foobar'
+});
+
+var bottom = blessed.line({
+  parent: form2,
+  type: 'line',
+  orientation: 'horizontal',
+  left: 0,
+  right: 0,
+  top: 50,
+  style: {
+    fg: 'blue'
+  }
+});
+
+screen.key('q', function() {
+  return screen.destroy();
+});
+
+form2.focus();
+
+form2.submit();
+
+screen.render();
+
+// https://github.com/chjj/blessed/blob/master/test/widget-table.js
+
+screen = blessed.screen({
+  dump: __dirname + '/logs/table.log',
+  autoPadding: false,
+  fullUnicode: true,
+  warnings: true
+});
+
+var DU = '杜';
+var JUAN = '鹃';
+
+var table = blessed.table({
+  //parent: screen,
+  top: 'center',
+  left: 'center',
+  data: null,
+  border: 'line',
+  align: 'center',
+  tags: true,
+  //width: '80%',
+  width: 'shrink',
+  style: {
+    border: {
+      fg: 'red'
+    },
+    header: {
+      fg: 'blue',
+      bold: true
+    },
+    cell: {
+      fg: 'magenta'
+    }
+  }
+});
+
+var data1 = [
+  [ 'Animals',  'Foods',  'Times'  ],
+  [ 'Elephant', 'Apple',  '1:00am' ],
+  [ 'Bird',     'Orange', '2:15pm' ],
+  [ 'T-Rex',    'Taco',   '8:45am' ],
+  [ 'Mouse',    'Cheese', '9:05am' ]
+];
+
+data1[1][0] = '{red-fg}' + data1[1][0] + '{/red-fg}';
+data1[2][0] += ' (' + DU + JUAN + ')';
+
+var data2 = [
+  [ 'Animals',  'Foods',  'Times',   'Numbers' ],
+  [ 'Elephant', 'Apple',  '1:00am',  'One'     ],
+  [ 'Bird',     'Orange', '2:15pm',  'Two'     ],
+  [ 'T-Rex',    'Taco',   '8:45am',  'Three'   ],
+  [ 'Mouse',    'Cheese', '9:05am',  'Four'    ]
+];
+
+data2[1][0] = '{red-fg}' + data2[1][0] + '{/red-fg}';
+data2[2][0] += ' (' + DU + JUAN + ')';
+
+screen.key('q', function() {
+  return screen.destroy();
+});
+
+table.setData(data2);
+screen.append(table);
+screen.render();
+
+setTimeout(function() {
+  table.setData(data1);
+  screen.render();
+}, 3000);

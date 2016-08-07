@@ -1,4 +1,4 @@
-// Type definitions for blessed 0.1.5
+// Type definitions for blessed 0.1.81
 // Project: https://github.com/chjj/blessed
 // Definitions by: bryn austin bellomy <https://github.com/brynbellomy>, Diullei Gomes <https://github.com/diullei>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
@@ -1496,7 +1496,7 @@ declare module "blessed" {
              * Object enabling a scrollbar.
              * Style of the scrollbar track if present (takes regular style options).
             */
-            scrollbar?: {style: any; track: any; }
+            scrollbar?: { style?: any; track?: any; ch?: string; }
         } 
 
         export interface ScrollableTextOptions extends ScrollableBoxOptions {
@@ -2104,7 +2104,7 @@ declare module "blessed" {
              * Grab key events and start reading text from the keyboard. Takes a callback which receives 
              * the final value.
             */
-            readInput(callback: (err: any, value?: string) => void): void;
+            readInput(callback?: (err: any, value?: string) => void): void;
             /**
              * Grab key events and start reading text from the keyboard. Takes a callback which receives 
              * the final value.
@@ -2216,11 +2216,11 @@ declare module "blessed" {
             /** 
              * whether the element is checked or not. 
              * */
-            checked: boolean;
+            checked?: boolean;
             /** 
              * enable mouse support. 
              * */
-            mouse: boolean;
+            mouse?: boolean;
         }
         
         /** 
@@ -2811,9 +2811,11 @@ declare module "blessed" {
     export function textarea(options?: Widgets.TextareaOptions): Widgets.TextareaElement;
     export function textbox(options?: Widgets.TextboxOptions): Widgets.TextboxElement;
     export function button(options?: Widgets.ButtonOptions): Widgets.ButtonElement;
-    export function checkbo(options?: Widgets.CheckboxOptions): Widgets.CheckboxElement;
+    export function checkbox(options?: Widgets.CheckboxOptions): Widgets.CheckboxElement;
     export function radioset(options?: Widgets.RadioSetOptions): Widgets.RadioSetElement;
     export function radiobutton(options?: Widgets.RadioButtonOptions): Widgets.RadioButtonElement;
+
+    export function table(options?: Widgets.TableOptions): Widgets.TableElement;
     
     export function prompt(options?: Widgets.PromptOptions): Widgets.PromptElement;
     export function question(options?: Widgets.QuestionOptions): Widgets.QuestionElement;
